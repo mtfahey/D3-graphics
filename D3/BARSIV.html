@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+
+</style>
+
+<div style="position: absolute; left: 0px; top:0px; width: 900px; padding-left: 10px;">
+<h2>Student loans at top for-profit and community colleges in NYC</h2>
+
+</div>
+
+
+<div style="position: absolute; left:0px; top: 70px; width: 300px;">
+<svg class="labels" width="300px" height="300"></svg>
+</div>
+
+<div style="position: absolute; left: 200px; top: 70px; width: 900px;">
+<svg class="chart" width="100%" height="300"></svg>
+
+
+<div id="option">
+    <input name="updateButton" 
+           type="button" 
+           value="1 Year" 
+           onclick="window.years=1; Update(years);" 
+    />
+        <input name="updateButton" 
+           type="button" 
+           value="2 Years" 
+           onclick="window.years=2; Update(years);" 
+    />
+        <input name="updateButton" 
+           type="button" 
+           value="3 Years" 
+           onclick="window.years=3; Update(years);" 
+    />
+            <input name="updateButton" 
+           type="button" 
+           value="4 Years" 
+           onclick="window.years=4; Update(years);" 
+    />
+           <input name="updateButton" 
+           type="button" 
+           value="Monthly Payments" 
+           onclick="console.log(years); Months(years);" 
+    />
+</div>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+
+<script>
+
+
+
+var years=1;
+
+
+var data = [{"name":"Sanford-Brown Institute","loan":7841,"interest":2987.138427, "type":"fp"},
+{"name":"Technical Career Institutes","loan":7657,"interest":2917.041058, "type":"fp"},
+{"name":"Berkeley College","loan":6592,"interest":2511.314439, "type":"fp"},
+{"name":"ASA College","loan":4898,"interest":1865.961487, "type":"fp"},
+{"name":"Queens College","loan":4857,"interest":1850.341964, "type":"p"},
+{"name":"Bernard M Baruch College","loan":4839,"interest":1843.484613, "type":"p"},
+{"name":"Monroe College","loan":4824,"interest":1837.770154, "type":"fp"},
+{"name":"Kingsborough CC","loan":4352,"interest":1657.955163, "type":"p"},
+{"name":"Borough of Manhattan CC","loan":3945,"interest":1502.902831, "type":"p"},
+{"name":"LaGuardia CC","loan":3892,"interest":1482.711741}
+];
+
+var x = d3.scale.linear()
+    .domain([0, 44000])
+    .range([0, 600]);
+
+
+
+d3.select(".labels")
+  .selectAll("svg")
+  .data(data)
+  .enter().append("text")
+  .text(function(d) {return d.name})
+  .attr("y", function (d,i) {return i*30+15 + "px";})
+  .attr("x","10px")
+    .attr("font-family", "serif")
+    .attr("fill", "black")
+    .attr("font-size", "15px");
+
+Update(years);
+
+
+
+
+function Months(years){
+
+mon = 1
+
+while (mon < 121) {
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .attr("fill-opacity","0.0")
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("x", function (d) { return years*(1/120)*(mon-1)*(x(d.loan) + x(d.interest)) + "px"; })
+    
+    .attr("stroke", "white")
+    .attr("stroke-opacity", "0.0")
+    .transition()
+    .attr("stroke-opacity", "1.0")
+    .attr("width", function (d) { return years*(1/120)*(x(d.loan) + x(d.interest)) + "px"; })
+    .delay(500)
+    .duration(1000);
+
+
+    mon++;
+
+  }
+
+  d3.select(".chart").selectAll("text").remove();
+
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("text")
+    .text( function (d) { return "$"+d3.format("0,000")(d3.format(".0f")((d.interest*years+d.loan*years)*(1/120)));})
+    .attr("y", function (d,i) {return i*30+15 + "px";})
+    .attr("font-family", "sans-serif")
+    .attr("fill", "white")
+    .attr("font-size", "15px")
+    .attr("x", function(d) {return (x(d.interest)+x(d.loan))*years+10 + "px";})
+    .transition()
+    .attr("fill", "black")
+    .duration(2000)
+    .delay(500);
+
+
+}
+
+
+
+
+
+function Update(years){
+
+d3.select(".chart").selectAll("*").remove();
+
+/*
+
+var x = d3.scale.linear()
+    .domain([0, 44000])
+    .range([0, 600]);*/
+
+
+
+d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("width", "0")
+    .transition()
+    .attr("width", function(d) { return x(d.loan)*years + "px"; })
+    .duration(1500)
+    .delay(100);
+
+
+d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("text")
+    .text( function (d) { return d3.format("0,000")(d.loan*years);})
+    .attr("y", function (d,i) {return i*30+15 + "px";})
+    .attr("font-family", "sans-serif")
+    .attr("fill", "white")
+    .attr("font-size", "15px")
+    .transition()
+    .attr("x", function(d) {return x(d.loan)*years-50 + "px";})
+    .duration(1000)
+    .delay(100)
+    .transition()
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .duration(2000)
+    .delay(1500);
+
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#AA5585"} else {return "#3AA6D0"}})
+    .attr("x", function(d) {return x(d.loan)*years + "px"; })
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("width", "0")
+    .transition()
+    .attr("width", function(d) { return x(d.interest)*years + "px"; })
+    .duration(1500)
+    .delay(1500);
+
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("text")
+    .text( function (d) { return d3.format("0,000")(d3.format(".0f")(d.interest)*years+d.loan*years);})
+    .attr("y", function (d,i) {return i*30+15 + "px";})
+    .attr("font-family", "sans-serif")
+    .attr("fill", "white")
+    .attr("font-size", "15px")
+    .attr("x", function(d) {return (x(d.interest)+x(d.loan))*years+10 + "px";})
+    .transition()
+    .attr("fill", "black")
+    .duration(2000)
+    .delay(2000);
+
+
+    console.log(years); 
+    return years; 
+
+  }
+
+</script>
+
+
+

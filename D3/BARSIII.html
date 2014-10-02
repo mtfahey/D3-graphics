@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.chart div {
+  font: 10px sans-serif;
+  background-color: steelblue;
+  text-align: right;
+  padding: 5px;
+  margin: 1px;
+  color: white;
+}
+
+</style>
+<div style="position: absolute; left:0px; top: 17px; width: 300px:">
+<svg class="labels" width="300px" height="450"></svg>
+</div>
+
+<div style="position: absolute; left: 250px; top: 17px; width: 1200px;">
+<svg class="chart" width="100%" height="450"></svg>
+
+
+<div id="option">
+    <input name="updateButton" 
+           type="button" 
+           value="1 Year" 
+           onclick="var years=1; Update(years);" 
+    />
+        <input name="updateButton" 
+           type="button" 
+           value="2 Years" 
+           onclick="var years=2; Update(years);" 
+    />
+        <input name="updateButton" 
+           type="button" 
+           value="3 Years" 
+           onclick="var years=3; Update(years);" 
+    />
+            <input name="updateButton" 
+           type="button" 
+           value="4 Years" 
+           onclick="var years=4; Update(years);" 
+    />
+           <input name="updateButton" 
+           type="button" 
+           value="Monthly Payments" 
+           onclick="Months(years);" 
+    />
+</div>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+
+<script>
+function Months(years){
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("stroke", "black")
+    .attr("width", function(d) { return x(d.loan)*years + x(d.interest)*years + "px"; })
+
+}
+
+
+var years=1;
+
+Update(years);
+
+function Update(years){
+
+d3.select(".chart").selectAll("*").remove();
+
+var data = [{"name":"Sanford-Brown Institute","loan":7841,"interest":2987.138427, "type":"fp"},
+{"name":"Technical Career Institutes","loan":7657,"interest":2917.041058, "type":"fp"},
+{"name":"Berkeley College","loan":6592,"interest":2511.314439, "type":"fp"},
+{"name":"ASA College","loan":4898,"interest":1865.961487, "type":"fp"},
+{"name":"Queens College","loan":4857,"interest":1850.341964, "type":"p"},
+{"name":"Bernard M Baruch College","loan":4839,"interest":1843.484613, "type":"p"},
+{"name":"Monroe College","loan":4824,"interest":1837.770154, "type":"fp"},
+{"name":"Brooklyn College","loan":4745,"interest":1807.674001, "type":"p"},
+{"name":"City College","loan":4610,"interest":1756.243866, "type":"p"},
+{"name":"Queensborough CC","loan":4360,"interest":1661.002875, "type":"p"},
+{"name":"Kingsborough CC","loan":4352,"interest":1657.955163, "type":"p"},
+{"name":"College of Technology","loan":3983,"interest":1517.379461, "type":"p"},
+{"name":"Borough of Manhattan CC","loan":3945,"interest":1502.902831, "type":"p"},
+{"name":"LaGuardia CC","loan":3892,"interest":1482.711741},
+{"name":"Long Island Business Institute","loan":2460,"interest":937.171347, "type":"fp"}];
+
+var x = d3.scale.linear()
+    .domain([0, 40000])
+    .range([0, 800]);
+
+d3.select(".labels")
+  .selectAll("svg")
+  .data(data)
+  .enter().append("text")
+  .text(function(d) {return d.name})
+  .attr("y", function (d,i) {return i*30+15 + "px";})
+  .attr("x","10px")
+    .attr("font-family", "sans-serif")
+    .attr("fill", "black")
+    .attr("font-size", "15px");
+
+
+
+d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("width", "0")
+    .transition()
+    .attr("width", function(d) { return x(d.loan)*years + "px"; })
+    .duration(1500)
+    .delay(100);
+
+
+d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("text")
+    .text( function (d) { return d.loan*years;})
+    .attr("y", function (d,i) {return i*30+15 + "px";})
+    .attr("font-family", "sans-serif")
+    .attr("fill", "white")
+    .attr("font-size", "15px")
+    .transition()
+    .attr("x", function(d) {return x(d.loan)*years-45 + "px";})
+    .duration(1000)
+    .delay(100)
+    .transition()
+    .attr("fill", function (d) {if (d.type === "fp") {return "#661141"} else {return "#0776A0"}})
+    .duration(2000)
+    .delay(2500);
+
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("rect")
+    .attr("height", "20px")
+    .attr("fill", function (d) {if (d.type === "fp") {return "#AA5585"} else {return "#3AA6D0"}})
+    .attr("x", function(d) {return x(d.loan)*years + "px"; })
+    .attr("y", function (d,i) {return i*"30";})
+    .attr("width", "0")
+    .transition()
+    .attr("width", function(d) { return x(d.interest)*years + "px"; })
+    .duration(1500)
+    .delay(2500);
+
+
+  d3.select(".chart")
+  .selectAll("svg")
+    .data(data)
+  .enter().append("text")
+    .text( function (d) { return d3.format(".0f")(d.interest)*years+d.loan*years;})
+    .attr("y", function (d,i) {return i*30+15 + "px";})
+    .attr("font-family", "sans-serif")
+    .attr("fill", "white")
+    .attr("font-size", "15px")
+    .attr("x", function(d) {return (x(d.interest)+x(d.loan))*years+10 + "px";})
+    .transition()
+    .attr("fill", "black")
+    .duration(2000)
+    .delay(3000);
+
+  }
+
+</script>
+
+
+

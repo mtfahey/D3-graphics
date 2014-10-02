@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+#blue:hover, #black:hover, #green:hover {
+    opacity: .7; 
+}
+
+</style>
+
+<div style="position: absolute; left: 0px; top:0px; width: 900px; padding-left: 10px;">
+<h2></h2>
+
+</div>
+
+
+<div style="position: absolute; left:0px; top: 100px; width: 300px;">
+<svg class="labels" width="300px" height="300"></svg>
+</div>
+
+<div style="position: absolute; left: 200px; top: 70px; width: 1000px;">
+<svg class="chart" width="100%" height="1000"></svg>
+
+</div>
+
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+
+
+<script>
+
+
+var data = [{"name":"Sanford-Brown Institute","total":1065,"asian":26, "black":381, "hispanic":381, "white":80, "two":11}]; 
+
+
+var rmax = 30;
+var many = data[0].total;
+var col = 1;
+var block = 1;
+
+
+blocks(data[0].hispanic, "blue");
+blocks((data[0].black+data[0].hispanic), "black");
+blocks(data[0].total, "green");
+
+
+
+function blocks(many, color){
+
+var group = d3.select(".chart").append("g").attr("id", color);
+
+while (block < many){
+
+group
+	.append("rect")
+    .attr("height", "10px")
+    .attr("width", "10px")
+    .attr("fill", color)
+    .attr("stroke", "white")
+
+    .attr("x", col*10)
+    .attr("y", block*10-rmax*10*(col-1)); 
+
+    if (block % rmax == 0) {
+    	col = col+1; 
+
+    }
+
+    block = block+1; 
+
+}
+
+}
+
+
+</script>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>    
+
+<style>
+#SteelBlue:hover, #SlateGray:hover, #SkyBlue:hover, #SeaGreen:hover, #Salmon:hover {
+    opacity: .7; 
+}
+</style>
+
+
+<div style="position: absolute; left: 0px; top:0px; width: 900px; padding-left: 10px;">
+<h2>For-profit demographics</h2>
+
+</div>
+
+
+<div style="position: absolute; left:25px; top: 85px; width: 300px;">
+     <select onchange="window.school=this.value; races(school);">
+      <option value="0">Sanford-Brown Institute</option>
+      <option value="1">Technical Career Institute</option>
+      <option value="2">ASA College</option>
+      <option value="3">Monroe College</option>
+</select> 
+<svg class="labels" width="300px" height="300"></svg>
+</div>
+
+<div style="position: absolute; left: 200px; top: 70px; width: 1000px;">
+<svg class="chart" width="100%" height="1000"></svg>
+
+</div>
+
+
+
+
+
+
+<script>
+
+
+var data = [{"name":"Sanford-Brown Institute","total":1065,"men":97,"women":968,"asian":26,"black":381,"hispanic":483,"white":80,"nonresidentAlien":0,"other":95},
+{"name":"Technical Career Institute","total":1048,"men":598,"women":450,"asian":50,"black":428,"hispanic":369,"white":67,"nonresidentAlien":13,"other":121},
+{"name":"Berkeley College","total":1191,"men":373,"women":818,"asian":39,"black":314,"hispanic":296,"white":126,"nonresidentAlien":190,"other":226},
+{"name":"ASA College","total":1406,"men":405,"women":1001,"asian":136,"black":543,"hispanic":602,"white":92,"nonresidentAlien":1,"other":32},
+{"name":"Monroe College ","total":2537,"men":827,"women":1710,"asian":33,"black":1125,"hispanic":1028,"white":54,"nonresidentAlien":190,"other":107}]
+
+
+
+
+
+
+var school = 1; 
+
+
+var rmax = 30;
+var many = data[school].total;
+var col = 1;
+var block = 1;
+
+
+races(0); 
+
+function races(school) {
+
+
+d3.selectAll("g").remove();
+d3.select(".labels").selectAll("text").remove();
+
+var rmax = 30;
+var many = data[school].total;
+var col = 1;
+var block = 1;
+
+
+
+console.log(school);
+
+
+blocks(data[school].hispanic, "SteelBlue");
+
+blocks((data[school].black+data[school].hispanic), "SlateGray");
+
+blocks((data[school].black+data[school].hispanic+data[school].white), "SkyBlue");
+
+blocks((data[school].black+data[school].hispanic+data[school].white+data[school].nonresidentAlien), "SeaGreen");
+
+blocks(data[school].total, "Salmon");
+
+window.block = 1;
+window.col = 1; 
+
+
+
+
+
+d3.select(".labels").append("text").attr("x",0).attr("y", 50).text(data[school].total+" students").attr("font-size", "28px"); 
+
+
+d3.select(".labels").append("text").attr("x", 0).attr("y", 100).text("Hispanic/latino "+ d3.format(".0f")(100*data[school].hispanic/data[school].total)+"%").attr("fill", "SteelBlue").attr("id", "SteelBlueLabel");
+
+d3.select(".labels").append("text").attr("x", 0).attr("y", 130).text("Black "+ d3.format(".0f")(100*data[school].black/data[school].total)+"%").attr("fill", "SlateGray").attr("id", "SlateGrayLabel");
+
+d3.select(".labels").append("text").attr("x", 0).attr("y", 160).text("White "+ d3.format(".0f")(100*data[school].white/data[school].total)+"%").attr("fill", "SkyBlue").attr("id", "SkyBlueLabel");
+
+d3.select(".labels").append("text").attr("x", 0).attr("y", 190).text("Nonresident alien "+ d3.format(".0f")(100*data[school].nonresidentAlien/data[school].total)+"%").attr("fill", "SeaGreen").attr("id", "SeaGreenLabel");
+
+d3.select(".labels").append("text").attr("x", 0).attr("y", 220).text("Other "+ d3.format(".0f")(100*(data[school].total-(data[school].black+data[school].hispanic+data[school].white+data[school].nonresidentAlien))/data[school].total)+"%").attr("fill", "Salmon").attr("id", "SalmonLabel");
+
+console.log("block:"+block+" Column: "+col);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+function blocks(many, color){
+
+
+var group = d3.select(".chart").append("g").attr("id", color)
+
+			.on("mouseover", mouseover)
+			.on("mouseout", mouseout);
+
+
+while (block < many){
+
+group
+	.append("rect")
+    .attr("height", "10px")
+    .attr("width", "10px")
+    .attr("fill", color)
+    .attr("stroke", "white")
+
+    .attr("x", col*10)
+    .attr("y", block*10-rmax*10*(col-1)); 
+
+    if (block % rmax == 0) {
+    	col = col+1; 
+
+    }
+
+    block = block+1; 
+
+    function mouseover() {
+  		d3.select("#"+color+"Label").style("font-weight", "bold");
+  		console.log(color);
+	}
+
+	    function mouseout() {
+  		d3.select("#"+color+"Label").style("font-weight", "normal");
+  		console.log(color);
+	}
+
+
+
+}
+
+
+}
+
+
+
+
+</script>
